@@ -1,0 +1,178 @@
+<% include static/head.ejs %>
+<%
+    var containers = [];
+    var containersRunning = [];
+    //Create tab for display
+    if(allContainer.length != 0){
+        for(var i = 0; i < allContainer[1].length; i++) {
+            if(allContainer[1][i].Status.split(" ")[0] != "Up") {
+                containers.push(allContainer[1][i]);
+            }
+        }
+    }
+
+    if(running[1].length != 0){
+        for(var i = 0; i < running[1].length; i++) {
+            containersRunning.push(running[1][i]);
+        }
+    }
+
+%>
+<div class="row">
+    <div class="col-xs-10 col-xs-offset-1 divError hidden">
+        <div class="alert alert-danger divMessageError" role="alert">
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            <span class="spanAlert"></span>
+        </div>
+    </div>
+
+    <div class="col-xs-10 col-sm-10 col-md-10 col-md-offset-1 col-sm-offset-1 col-xs-offset-1">
+        <div class="divContentRunning">
+            <% if(running[1].length != 0){%>
+                <div class="divRunning">
+                    <h2>Containeur lancé</h2>
+                    <ul class="list-group ul-running">
+                        <% for(var i = 0; i < containersRunning.length; i++) {%>
+                        <li class="list-group-item row">
+                            <div class="col-xs-8 col-sm-8 col-md-9">
+                                <div class="col-md-4">
+                                    <b>Nom : </b><%= containersRunning[i].Names[0] %>
+                                </div>
+                                <div class="col-md-4">
+                                    <b>Image : </b><%= containersRunning[i].Image %>
+                                </div>
+                                <div class="col-md-4">
+                                    <b>Statut : </b><i><%= containersRunning[i].Status %></i>
+                                </div>
+                            </div>
+                            <div class="col-xs-4 col-sm-4 col-md-3">
+                                <a href="/stopContainer/<%= containersRunning[i].Id %>" class="stopContainer"><button class="btn btn-danger pull-right RbtnMargin"><span class="glyphicon glyphicon-stop"></span> Stop</button></a>
+                                <a href="/detailsContainer/<%= containersRunning[i].Id %> "><button class="btn btn-primary pull-right"><span class="glyphicon glyphicon-list"> </span> Fiche</button></a>
+                            </div>
+                        </li>
+                        <% } %>
+                    </ul>
+                </div>
+            <% } else { %>
+                <div class="noContainerRunning">
+                    <h2>Aucun containeur lancé</h2>
+                    <hr>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-10 col-sm-10 col-md-10 col-md-offset-1 col-sm-offset-1 col-xs-offset-1">
+        <div class="divListContainers">
+            <% if(allContainer.length != 0){%>
+                <div class="divContainers">
+                    <h2>Containeur disponible</h2>
+                    <ul class="list-group ul-containers">
+                        <% for(var i = 0; i < containers.length; i++) {%>
+                        <li class="list-group-item row">
+                            <div class="col-xs-8 col-sm-8 col-md-9">
+                                <div class="col-md-4">
+                                    <b>Nom : </b> <%= containers[i].Names[0] %>
+                                </div>
+                                <div class="col-md-4">
+                                    <b>Image : </b><%= containers[i].Image %>
+                                </div>
+                                <div class="col-md-4">
+                                    <b>Statut : </b><i><%= containers[i].Status %></i>
+                                </div>
+                            </div>
+                            <div class="col-xs-4 col-sm-4 col-md-3">
+                                <a href="/startContainer/<%= containers[i].Id %>" class="startContainer"> <button class="btn btn-success pull-right RbtnMargin" type="button"><span class="glyphicon glyphicon-play"></span> Start</button></a>
+                                <a href="/detailsContainer/<%=containers[i].Id %>"><button class="btn btn-primary pull-right" type="button"><span class="glyphicon glyphicon-list"> </span> Fiche</button> </a>
+                            </div>
+                        </li>
+                        <% } %>
+                    </ul>
+                </div>
+            <% } else { %>
+                <div class="noContainer">
+                    <h3>Aucun containeur disponible</h3>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).on('click', '.startContainer', function(event) {
+        var original = $(this).parent().parent();
+        var clone = original.clone();
+        var link = clone.find(".startContainer");
+        var button = link.children(0);
+
+        $.getJSON($(this).attr('href')).success( function( data ) {
+
+            original.remove();
+            link.attr("href", "/stopContainer/" + data);
+            link.removeClass("startContainer").addClass("stopContainer");
+            button.removeClass("btn-success").addClass("btn-danger");
+            button.children(0).remove();
+            button.html("<span class='glyphicon glyphicon-stop'></span> Stop");
+
+            if ($(".divRunning").length == 0) {
+                $(".noContainerRunning").remove();
+                var stringRunning = "<div class='divRunning'>";
+                stringRunning += "<h2>Containeur lancé</h2>";
+                stringRunning += "<ul class='list-group ul-running'>";
+                stringRunning += "</ul>";
+                stringRunning += "</div>";
+                $(".divContentRunning").append(stringRunning);
+            }
+            $('.ul-running').append(clone);
+
+        }).fail(function(jqXHR, status, data) {
+            $(".divError").removeClass("hidden").fadeOut(4200);
+            $( ".spanAlert" ).text( jqXHR.responseText ).show().fadeOut(4200);
+            event.preventDefault();
+        });
+        return false;
+    });
+
+    $(document).on('click', '.stopContainer', function(event) {
+        console.log("click");
+        var original = $(this).parent().parent();
+        var clone = original.clone();
+        var link = clone.find(".stopContainer");
+        var button = link.children(0);
+
+        console.log("av call");
+        $.getJSON($(this).attr('href')).success( function( data ) {
+            console.log("in success");
+            original.remove();
+            link.attr("href", "/startContainer/" + data);
+            link.removeClass("stopContainer").addClass("startContainer");
+            button.removeClass("btn-danger").addClass("btn-success");
+            button.children(0).removeClass("glyphicon-stop").addClass("glyphicon-play");
+            button.children(0).remove();
+            button.html("<span class='glyphicon glyphicon-play'></span> Start");
+
+            if ($(".divContainers").length == 0) {
+                $(".noContainer").remove();
+                var stringRunning = "<div class='divContainers'>";
+                stringRunning += "<h2>Containeur disponible</h2>";
+                stringRunning += "<ul class='list-group ul-containers'>";
+                stringRunning += "</ul>";
+                stringRunning += "</div>";
+                $(".divListContainers").append(stringRunning);
+            }
+            $('.ul-containers').prepend(clone);
+
+        }).fail(function(jqXHR, status, data) {
+            console.log("in fail");
+            $(".divError").removeClass("hidden").fadeOut(4200);
+            $( ".spanAlert" ).text( jqXHR.responseText ).show().fadeOut(4200);
+            event.preventDefault();
+        });
+        return false;
+    });
+
+</script>
+<% include static/foo.ejs%>

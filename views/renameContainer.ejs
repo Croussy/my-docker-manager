@@ -1,0 +1,14 @@
+<% include static/head.ejs %>
+<div class="row">
+    <div class="col-md-5 col-md-offset-2">
+        <form action="/renamedContainer/<%= container.Id %>" method="post">
+            <div class="form-group">
+                <label>Name</label>
+                <input name="nameContainer" id="nameContainer" type="text" class="form-control" value="<%= container.Name %>" autofocus>
+            </div>
+            <button type="submit" class="btn btn-success">Valider</button>
+            <a href="/detailContainer/<%= container.Id %>"><button class="btn btn-danger pull-right">Retourner au détail</button></a>
+        </form>
+    </div>
+</div>
+<% include static/foo.ejs%>

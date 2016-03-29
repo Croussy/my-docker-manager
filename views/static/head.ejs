@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap-switch.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <link rel="icon" type="image/png" href="/static/images/favicon-96x96.png" sizes="96x96">
+    <title><%= title %></title>
+</head>
+<body>
+<script src="/static/js/jquery-1.11.3.min.js"></script>
+<script src="/static/bootstrap/js/bootstrap.min.js"></script>
+
+<nav class="navbar navbar-default">
+    <div class="navbar navbar-default navbar-fixed-top">
+        <a style="color: #2aabd2" class="navbar-brand" href="/">
+            My docker manager
+        </a>
+        <% if (user) { %>
+            <ul  class="nav navbar-nav">
+                <li><a href="/">Containers</a></li>
+                <li><a href="/images">Images</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+               <li class="dropdown">
+                   <a href="#" class="dropdown-toggle" data-toggle="dropdown"><%= user.local.username %> <span class="caret"></span></a>
+                   <ul class="dropdown-menu">
+                       <li><a href="/settings">Mes paramètres</a></li>
+                       <li><a href="/logout">Se déconnecter</a></li>
+                   </ul>
+               </li>
+            </ul>
+        <% } %>
+    </div>
+</nav>
+<% if (user) { %>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-9 col-md-offset-1">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h1 class="panel-title"><h2><%= panelTitle %></h2></h1>
+                    </div>
+                    <div class="panel-body">
+<% } %>

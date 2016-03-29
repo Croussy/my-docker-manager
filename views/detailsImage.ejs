@@ -1,0 +1,63 @@
+<% include static/head.ejs %>
+<div class="row">
+    <div class="col-md-7 col-xs-8 col-md-offset-2">
+        <table class="table table-striped table-condensed">
+            <tr>
+                <td><b>Id</b></td>
+                <td><%= image.Id %></td>
+            </tr>
+            <tr>
+                <td><b>Nom</b></td>
+                <td>
+                    <%
+                    var stringName = "";
+                    if(image.RepoTags.length > 1) {
+                        for (var j = 0; j < image.RepoTags.length; j++) {
+                            if(j + 1 < image.RepoTags.length) {
+                                stringName += image.RepoTags[j]+ ", ";
+                            } else {
+                                stringName += image.RepoTags[j];
+                            }
+                        }
+                    } else {
+                        stringName = image.RepoTags;
+                    }
+                    %>
+                    <%= stringName %>
+                </td>
+            </tr>
+            <tr>
+                <td><b>Architecture</b></td>
+                <td><%= image.Architecture %></td>
+            </tr>
+            <tr>
+                <td><b>OS</b></td>
+                <td><%= image.Os %></td>
+            </tr>
+            <tr>
+                <td><b>Commande</b></td>
+                <td>
+                    <%
+                    var stringCmd = "\" ";
+                    for (var i = 0; i < image.Config.Cmd.length; i++) {
+                        stringCmd += image.Config.Cmd[i]+ " ";
+                    }
+                    %>
+                    <%= stringCmd + "\""%>
+                </td>
+            </tr>
+            <% if(image.Author.length > 0) {%>
+                <tr>
+                    <td><b>Auteur</b>:</td>
+                    <td><%= image.Author %></td>
+                </tr>
+            <% } %>
+        </table>
+        <a href="/images"><button class="btn btn-success">Retour à la liste</button></a>
+    </div>
+    <div class="col-md-3 col-xs-4 ">
+        <a href="/deleteImage/<%= image.RepoTags[0] %>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette image ?')"> <button class="btn btn-danger pull-left"> Supprimer l'image </button></a>
+    </div>
+</div>
+</div>
+<% include static/foo.ejs%>

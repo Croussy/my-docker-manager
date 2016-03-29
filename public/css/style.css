@@ -1,0 +1,9 @@
+.RbtnMargin { margin-left: 8px; }
+
+.truncate {
+    width: 900px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+}

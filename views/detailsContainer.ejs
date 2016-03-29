@@ -1,0 +1,80 @@
+<% include static/head.ejs %>
+<div class="row">
+    <div class="col-md-7 col-xs-8 col-md-offset-2">
+        <table class="table table-striped table-condensed">
+            <tr>
+                <td><b>Id</b></td>
+                <td><%= container.Id %></td>
+            </tr>
+            <tr>
+                <td><b>Nom</b></td>
+                <td><%= container.Name %></td>
+            </tr>
+            <tr>
+                <td><b>Image</b></td>
+                <td><%= container.Config.Image %></td>
+            </tr>
+            <tr>
+                <td><b>Status</b></td>
+                <td><%= container.State.Status %></td>
+            </tr>
+            <tr>
+                <td><b>Commande</b></td>
+                <td>
+                    <%
+                        var stringCmd = "\" ";
+                        for (var i = 0; i < container.Config.Cmd.length; i++) {
+                            stringCmd += container.Config.Cmd[i]+ " ";
+                        }
+                    %>
+                    <%= stringCmd + "\""%>
+                </td>
+            </tr>
+            <% if(container.Config.Volumes != null) { %>
+                <tr>
+                    <td><b>Volume</b></td>
+                    <td>
+                        <% for(var volume in container.Config.Volumes) { %>
+                            <%= volume %>
+                        <% } %>
+                    </td>
+                </tr>
+            <% } %>
+            <tr>
+                <table class="table table-striped">
+                    <tr>
+                       <th>IP</th>
+                        <th>Port interne <span class="glyphicon glyphicon-log-in"></span></th>
+                        <th>Port externe <span class="glyphicon glyphicon-log-out"></span></th>
+                    </tr>
+                    <%
+                        net = container["HostConfig"]["PortBindings"];
+                        for (var key in net ) { %>
+                            <tr>
+                                <td><%= net[key][0]["HostIp"]%></td>
+                                <td><%= net[key][0]["HostPort"] %></td>
+                                <td><%= key %></td>
+                            </tr>
+                    <%
+                        }
+                    %>
+                </table>
+            </tr>
+        </table>
+        <a href="/renameContainer/<%= container.Id %>"><button class="btn btn-primary">Renommer le container</button></a>
+        <a href="/deleteContainer/<%= container.Id %>"><button class="btn btn-danger pull-right RbtnMargin">Supprimer le container</button></a>
+    </div>
+    <div class="col-md-3 col-xs-4 ">
+        <% if (container.State.Running == true) { %>
+            <% if (container.State.Paused == true) {%>
+                <a href="/unpauseContainer/<%= container.Id %>"><button  class="btn btn-default "><span class="glyphicon glyphicon-play"> Unpaused</span></button></a>
+            <% } else if (container.State.Paused == false) { %>
+                <a href="/pauseContainer/<%= container.Id %>"><button  class="btn btn-warning "><span class="glyphicon glyphicon-pause"> Pause</span></button></a>
+            <% }  %>
+            <a href="/stopContainer/<%= container.Id %>"><button class="btn btn-danger"><span class="glyphicon glyphicon-stop"> Stop</span></button></a>
+        <% } else { %>
+            <a href="/startContainer/<%= container.Id %>"><button class="btn btn-success"><span class="glyphicon glyphicon-play"> Lancer</span></button></a>
+        <% } %>
+    </div>
+</div>
+<% include static/foo.ejs%>

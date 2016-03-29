@@ -1,0 +1,96 @@
+<% include static/head.ejs %>
+
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-8 col-md-offset-2">
+        <h1>Chercher une image</h1>
+        <form>
+            <input type="text" autofocus>
+            <button type="submit">Valider</button>
+        </form>
+        <div class="alert alert-danger hide" id="alert" role="alert">
+            <span id="spanAlert"></span>
+        </div>
+        <br />
+        <div>
+            <ul class="list-group" id="tabResultImage">
+
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-8 col-md-offset-2">
+        <hr>
+        <% if(images.length != 0){%>
+        <h1>Liste des images</h1>
+        <ul class="list-group">
+            <% for(var i = 0; i < images.length; i++) {%>
+            <li class="list-group-item row">
+                <div class="col-xs-8 col-sm-8 col-md-8">
+                    <b>Nom : </b>
+                    <%
+                        var stringName = "";
+                        if(images[i].RepoTags.length > 1) {
+                            for (var j = 0; j < images[i].RepoTags.length; j++) {
+                                if(j + 1 < images[i].RepoTags.length) {
+                                    stringName += images[i].RepoTags[j]+ ", ";
+                                } else {
+                                    stringName += images[i].RepoTags[j];
+                                }
+                            }
+                        } else {
+                            stringName = images[i].RepoTags;
+                        }
+                    %>
+                    <%= stringName %>
+                </div>
+                <div class="col-xs-4 col-sm-4 col-md-4">
+                    <a href="/deleteImage/<%= images[i].RepoTags[0] %>" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette image ?')"> <button class="btn btn-danger pull-right RbtnMargin"> Supprimer</button></a>
+                    <a href="/detailsImage/<%= images[i].Id %> "><button class="btn btn-primary pull-right"><span class="glyphicon glyphicon-list"> </span> Fiche</button></a>
+                </div>
+            </li>
+            <% } %>
+        </ul>
+        <% } else { %>
+            <h2>Aucune image a été crée</h2>
+        <% } %>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $( "form" ).submit(function( event ) {
+        var inputImage =  $( "input:first" ).val();
+
+        if ( inputImage != "") {
+            var url =  "http://localhost:3000/searchImage/"+ inputImage;
+
+            $.getJSON(url).success( function( data ) {
+                for(var i = 0; i < data.length; i++) {
+                    var stringHtml ="";
+                    stringHtml += "<li class='list-group-item row'>";
+                    stringHtml += "<div class='col-xs-8 col-sm-8 col-md-8'>";
+                    stringHtml += "<b>" + data[i].name + "</b>";
+                    stringHtml += "<br/>";
+                    stringHtml += "<i>" + data[i].description + "</i>";
+                    stringHtml += "</div>";
+                    stringHtml += "<div class='col-xs-4 col-sm-4 col-md-4'>";
+                    stringHtml += "<a href=''><button class='btn btn-primary pull-right'>Pull <span class='glyphicon glyphicon-chevron-right'></span></button></a>";
+                    stringHtml += "</div>";
+                    stringHtml += "</li>";
+
+                    $("#tabResultImage").append(stringHtml);
+                }
+            }).fail(function(jqXHR, status, data) {
+                alert("fail");
+            });
+        } else {
+            $( "#alert").removeClass("hide").fadeOut(5000);
+            $( "#spanAlert" ).text( "Veuillez indiquer le nom de l'image que vous recherché !" ).show().fadeOut( 5000 );
+            event.preventDefault();
+        }
+        return false;
+    });
+</script>
+<% include static/foo.ejs%>
