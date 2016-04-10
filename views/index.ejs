@@ -137,15 +137,12 @@
     });
 
     $(document).on('click', '.stopContainer', function(event) {
-        console.log("click");
         var original = $(this).parent().parent();
         var clone = original.clone();
         var link = clone.find(".stopContainer");
         var button = link.children(0);
 
-        console.log("av call");
         $.getJSON($(this).attr('href')).success( function( data ) {
-            console.log("in success");
             original.remove();
             link.attr("href", "/startContainer/" + data);
             link.removeClass("stopContainer").addClass("startContainer");
@@ -164,6 +161,15 @@
                 $(".divListContainers").append(stringRunning);
             }
             $('.ul-containers').prepend(clone);
+
+            if($('.ul-running').children().length == 0) {
+                var stringHtml = "<div class='noContainerRunning'>";
+                stringHtml += "<h2>Aucun containeur lancé</h2>";
+                stringHtml += "<hr>";
+                stringHtml += "</div>";
+                $('.divRunning').remove();
+                $('.divContentRunning').append(stringHtml);
+            }
 
         }).fail(function(jqXHR, status, data) {
             console.log("in fail");
