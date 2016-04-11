@@ -155,12 +155,14 @@ module.exports = function(app, passport){
 
 	app.get('/pauseContainer/:id', isLoggedIn, function(req, res) {
 		var id = req.params.id;
-		console.log(req.header('Referer'));
 		var client = requestJson.createClient('http://'+ adresses[0] +':'+ port +'/');
 		client.post('containers/'+ id + '/pause', null, function(err, response, body) {
-			if (response.statusCode == 204) {
-				backurl = req.header("Referer");
-				res.redirect(backurl);
+			if(response.statusCode == 204){
+				res.end(JSON.stringify(id));
+			}
+			else if(response.statusCode == 304){
+				res.writeHead(500, {'Content-Type': 'text/plain'});
+				res.end('Le container est déjà en pause');
 			}
 		})
 	});
@@ -171,9 +173,12 @@ module.exports = function(app, passport){
 		var client = requestJson.createClient('http://'+ adresses[0] +':'+ port +'/');
 
 		client.post('containers/'+ id + '/unpause', null, function(err, response, body) {
-			if (response.statusCode == 204) {
-				backurl = req.header("Referer");
-				res.redirect(backurl);
+			if(response.statusCode == 204){
+				res.end(JSON.stringify(id));
+			}
+			else if(response.statusCode == 304){
+				res.writeHead(500, {'Content-Type': 'text/plain'});
+				res.end('Le container est déjà en unpause');
 			}
 		})
 	});

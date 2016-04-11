@@ -65,16 +65,70 @@
         <a href="/deleteContainer/<%= container.Id %>"><button class="btn btn-danger pull-right RbtnMargin">Supprimer le container</button></a>
     </div>
     <div class="col-md-3 col-xs-4 ">
-        <% if (container.State.Running == true) { %>
-            <% if (container.State.Paused == true) {%>
-                <a href="/unpauseContainer/<%= container.Id %>"><button  class="btn btn-default "><span class="glyphicon glyphicon-play"> Unpaused</span></button></a>
-            <% } else if (container.State.Paused == false) { %>
-                <a href="/pauseContainer/<%= container.Id %>"><button  class="btn btn-warning "><span class="glyphicon glyphicon-pause"> Pause</span></button></a>
-            <% }  %>
-            <a href="/stopContainer/<%= container.Id %>"><button class="btn btn-danger"><span class="glyphicon glyphicon-stop"> Stop</span></button></a>
-        <% } else { %>
-            <a href="/startContainer/<%= container.Id %>"><button class="btn btn-success"><span class="glyphicon glyphicon-play"> Lancer</span></button></a>
-        <% } %>
+        <div class="actionContainer">
+            <% if (container.State.Running == true) { %>
+                <% if (container.State.Paused == true) {%>
+                    <a href="/unpauseContainer/<%= container.Id %>" class="unpauseContainer"><button class="btn btn-default "><span class="glyphicon glyphicon-play"></span> Unpaused</button></a>
+                <% } else if (container.State.Paused == false) { %>
+                    <a href="/pauseContainer/<%= container.Id %>" class="pauseContainer"><button class="btn btn-warning "><span class="glyphicon glyphicon-pause"></span> Pause</button></a>
+                    <a href="/stopContainer/<%= container.Id %>" class="stopContainer"><button class="btn btn-danger"><span class="glyphicon glyphicon-stop"></span> Stop</button></a>
+                <% }  %>
+            <% } else { %>
+                <a href="/startContainer/<%= container.Id %>" class="startContainer"><button class="btn btn-success"><span class="glyphicon glyphicon-play"></span> Lancer</button></a>
+            <% } %>
+        </div>
     </div>
 </div>
+
+<script type="text/javascript">
+    $(document).on('click', '.startContainer', function(event) {
+        var href = $(this).attr('href');
+        $.getJSON(href).success( function( data ) {
+            $(this).remove();
+            var stringHtml = "<a href='/pauseContainer/"+ data +"' class='pauseContainer'><button class='btn btn-warning'><span class='glyphicon glyphicon-pause'></span> Pause</button></a>";
+            stringHtml += " ";
+            stringHtml += "<a href='/stopContainer/"+ data +"' class='stopContainer'><button class='btn btn-danger'><span class='glyphicon glyphicon-stop'></span> Stop</button></a>";
+            $('.actionContainer').append(stringHtml);
+        });
+        return false;
+    });
+
+    $(document).on('click', '.stopContainer', function(event) {
+        var href = $(this).attr('href');
+        $.getJSON(href).success( function( data ) {
+            $('.stopContainer').remove();
+            if ($('.pauseContainer').length>0) {
+                $('.pauseContainer').remove();
+            } else if ($('.unpauseContainer').length>0) {
+                $('.unpauseContainer').remove();
+            }
+            var stringHtml = "<a href='/startContainer/"+ data +"' class='startContainer'><button class='btn btn-success'><span class='glyphicon glyphicon-play'></span> Lancer</button></a>";
+            $('.actionContainer').append(stringHtml);
+        });
+        return false;
+    });
+
+    $(document).on('click', '.pauseContainer', function(event) {
+        var href = $(this).attr('href');
+        $.getJSON(href).success( function( data ) {
+            $('.pauseContainer').remove();
+            $('.stopContainer').remove();
+            var stringHtml = "<a href='/unpauseContainer/"+ data +"' class='unpauseContainer'><button class='btn btn-default'><span class='glyphicon glyphicon-play'></span> Unpaused</button></a>";
+            $('.actionContainer').append(stringHtml);
+        });
+        return false;
+    });
+
+    $(document).on('click', '.unpauseContainer', function(event) {
+        var href = $(this).attr('href');
+        $.getJSON(href).success( function( data ) {
+            $('.unpauseContainer').remove();
+            var stringHtml = "<a href='/pauseContainer/"+ data +"' class='pauseContainer'><button class='btn btn-warning'><span class='glyphicon glyphicon-pause'></span> Pause</button></a>";
+            stringHtml += " ";
+            stringHtml += "<a href='/stopContainer/"+ data +"' class='stopContainer'><button class='btn btn-danger'><span class='glyphicon glyphicon-stop'></span> Stop</button></a>";
+            $('.actionContainer').append(stringHtml);
+        });
+        return false;
+    });
+</script>
 <% include static/foo.ejs%>
