@@ -84,7 +84,7 @@
     $(document).on('click', '.startContainer', function(event) {
         var href = $(this).attr('href');
         $.getJSON(href).success( function( data ) {
-            $(this).remove();
+            $(".startContainer").remove();
             var stringHtml = "<a href='/pauseContainer/"+ data +"' class='pauseContainer'><button class='btn btn-warning'><span class='glyphicon glyphicon-pause'></span> Pause</button></a>";
             stringHtml += " ";
             stringHtml += "<a href='/stopContainer/"+ data +"' class='stopContainer'><button class='btn btn-danger'><span class='glyphicon glyphicon-stop'></span> Stop</button></a>";
