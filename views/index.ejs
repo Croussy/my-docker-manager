@@ -104,6 +104,7 @@
 
     $(document).on('click', '.startContainer', function(event) {
         var original = $(this).parent().parent();
+
         var clone = original.clone();
         var link = clone.find(".startContainer");
         var button = link.children(0);
@@ -137,46 +138,57 @@
     });
 
     $(document).on('click', '.stopContainer', function(event) {
-        var original = $(this).parent().parent();
-        var clone = original.clone();
-        var link = clone.find(".stopContainer");
-        var button = link.children(0);
+        // check if container is paused
+        var id = $(this).attr('href').split("/")[2];
+        var href = "/container/" + id;
 
-        $.getJSON($(this).attr('href')).success( function( data ) {
-            original.remove();
-            link.attr("href", "/startContainer/" + data);
-            link.removeClass("stopContainer").addClass("startContainer");
-            button.removeClass("btn-danger").addClass("btn-success");
-            button.children(0).removeClass("glyphicon-stop").addClass("glyphicon-play");
-            button.children(0).remove();
-            button.html("<span class='glyphicon glyphicon-play'></span> Start");
+        $.getJSON(href).success( function( data ) {
+            var isPaused = data.State.Paused;
+            if (!isPaused) {
+                var original = $(this).parent().parent();
+                var clone = original.clone();
+                var link = clone.find(".stopContainer");
+                var button = link.children(0);
 
-            if ($(".divContainers").length == 0) {
-                $(".noContainer").remove();
-                var stringRunning = "<div class='divContainers'>";
-                stringRunning += "<h2>Containeur disponible</h2>";
-                stringRunning += "<ul class='list-group ul-containers'>";
-                stringRunning += "</ul>";
-                stringRunning += "</div>";
-                $(".divListContainers").append(stringRunning);
+                $.getJSON($(this).attr('href')).success( function( data ) {
+                    original.remove();
+                    link.attr("href", "/startContainer/" + data);
+                    link.removeClass("stopContainer").addClass("startContainer");
+                    button.removeClass("btn-danger").addClass("btn-success");
+                    button.children(0).removeClass("glyphicon-stop").addClass("glyphicon-play");
+                    button.children(0).remove();
+                    button.html("<span class='glyphicon glyphicon-play'></span> Start");
+
+                    if ($(".divContainers").length == 0) {
+                        $(".noContainer").remove();
+                        var stringRunning = "<div class='divContainers'>";
+                        stringRunning += "<h2>Containeur disponible</h2>";
+                        stringRunning += "<ul class='list-group ul-containers'>";
+                        stringRunning += "</ul>";
+                        stringRunning += "</div>";
+                        $(".divListContainers").append(stringRunning);
+                    }
+                    $('.ul-containers').prepend(clone);
+
+                    if($('.ul-running').children().length == 0) {
+                        var stringHtml = "<div class='noContainerRunning'>";
+                        stringHtml += "<h2>Aucun containeur lancé</h2>";
+                        stringHtml += "<hr>";
+                        stringHtml += "</div>";
+                        $('.divRunning').remove();
+                        $('.divContentRunning').append(stringHtml);
+                    }
+
+                }).fail(function(jqXHR, status, data) {
+                    $(".divError").removeClass("hidden").fadeOut(4200);
+                    $( ".spanAlert" ).text( jqXHR.responseText ).show().fadeOut(4200);
+                    event.preventDefault();
+                });
+            } else {
+                alert("Veuillez unpause pour pouvoir stopper le container !");
             }
-            $('.ul-containers').prepend(clone);
-
-            if($('.ul-running').children().length == 0) {
-                var stringHtml = "<div class='noContainerRunning'>";
-                stringHtml += "<h2>Aucun containeur lancé</h2>";
-                stringHtml += "<hr>";
-                stringHtml += "</div>";
-                $('.divRunning').remove();
-                $('.divContentRunning').append(stringHtml);
-            }
-
-        }).fail(function(jqXHR, status, data) {
-            console.log("in fail");
-            $(".divError").removeClass("hidden").fadeOut(4200);
-            $( ".spanAlert" ).text( jqXHR.responseText ).show().fadeOut(4200);
-            event.preventDefault();
         });
+
         return false;
     });
 

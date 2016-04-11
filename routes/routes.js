@@ -243,6 +243,17 @@ module.exports = function(app, passport){
 		});
 	});
 
+
+	app.get('/container/:id', isLoggedIn, function(req, res){
+		var id = req.params.id;
+		var client = requestJson.createClient('http://'+ adresses[0] +':'+ port +'/');
+		client.get('containers/'+id+'/json', null, function(err, response, body) {
+			if(response.statusCode == 200){
+				res.end(JSON.stringify(body));
+			}
+		});
+	});
+
 	// FUNCTIONS
 	function isLoggedIn(req, res, next){
 		if (req.isAuthenticated()){
